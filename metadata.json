@@ -1,0 +1,7 @@
+{
+  "name": "焼き鳥じゃんけん",
+  "description": "昭和レトロな焼き鳥屋のガネーシャ店主と真剣勝負！勝ったらドリンク1杯無料のスマートフォン向けじゃんけんミニゲーム。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

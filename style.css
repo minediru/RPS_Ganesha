@@ -1,0 +1,1085 @@
+/* ==========================================================================
+   焼き鳥じゃんけん (Yakitori Janken)
+   昭和レトロな焼き鳥屋 × ミニゲームセンター スタイル
+   ========================================================================== */
+
+:root {
+  --color-bg-dark: #140d0a;
+  --color-wood-dark: #2a1409;
+  --color-wood-mid: #4a2612;
+  --color-wood-light: #783e1e;
+  --color-wood-border: #a15829;
+  
+  --color-red-lantern: #dc2626;
+  --color-red-glow: rgba(220, 38, 38, 0.45);
+  --color-amber-gold: #f59e0b;
+  --color-amber-glow: rgba(245, 158, 11, 0.35);
+  
+  --color-washi: #fffbeb;
+  --color-washi-dim: #fef3c7;
+  --color-ink: #1c1917;
+  --color-ink-muted: #57534e;
+
+  --color-accent-green: #16a34a;
+  --color-accent-blue: #2563eb;
+  
+  --font-display: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background-color: var(--color-bg-dark);
+  font-family: var(--font-display);
+  color: var(--color-washi);
+  overflow-x: hidden;
+}
+
+/* Background Atmosphere: Izakaya Charcoal & Wood */
+body {
+  background: 
+    radial-gradient(circle at 50% 15%, rgba(220, 38, 38, 0.18) 0%, transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+    linear-gradient(180deg, #180f0c 0%, #120906 100%);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* App Outer Wrapper (Smartphone Frame for Desktop, Fullscreen on Mobile) */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: 
+    linear-gradient(180deg, #24120a 0%, #1b0d07 100%);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(245, 158, 11, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Header: Japanese Noren & Lanterns
+   ========================================================================== */
+.tavern-header {
+  position: relative;
+  background: linear-gradient(180deg, #1f0d06 0%, #2e160a 100%);
+  border-bottom: 3px solid var(--color-amber-gold);
+  padding: 8px 12px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 16px rgba(245, 158, 11, 0.25);
+}
+
+/* Noren (Shop Curtain) subtle fringe with gold rim */
+.tavern-header::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1e0d06,
+    #1e0d06 18px,
+    #140804 18px,
+    #140804 22px
+  );
+  border-bottom: 2px solid rgba(245, 158, 11, 0.5);
+  pointer-events: none;
+}
+
+.lantern-cluster {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chochin-lantern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: lanternSway 3.2s ease-in-out infinite alternate;
+  transform-origin: top center;
+}
+
+.chochin-lantern.right {
+  animation-delay: -1.6s;
+}
+
+.chochin-body {
+  background: radial-gradient(circle at 45% 45%, #ef4444 0%, #b91c1c 70%, #7f1d1d 100%);
+  color: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #fde047;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: 900;
+  writing-mode: vertical-rl;
+  letter-spacing: 1px;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.75), inset 0 0 6px rgba(255, 255, 255, 0.4);
+  line-height: 1.1;
+  text-shadow: 0 1px 2px #000;
+}
+
+.chochin-cap {
+  width: 16px;
+  height: 4px;
+  background: #0f172a;
+  border-radius: 2px;
+}
+
+@keyframes lanternSway {
+  0% { transform: rotate(-4deg); }
+  100% { transform: rotate(4deg); }
+}
+
+.tavern-title-block {
+  text-align: center;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.tavern-subtitle {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--color-amber-gold);
+  text-shadow: 0 1px 3px #000, 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+.tavern-title {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: linear-gradient(90deg, #ffffff 0%, #fef08a 35%, #f59e0b 70%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldTextShimmer 4s linear infinite;
+  filter: drop-shadow(0 2px 4px #000);
+}
+
+@keyframes goldTextShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-btn {
+  background: #381a0b;
+  border: 1px solid var(--color-wood-border);
+  color: var(--color-washi);
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.tool-btn:active {
+  transform: translateY(2px);
+  background: #4a2612;
+}
+
+/* ==========================================================================
+   Screen Containers
+   ========================================================================== */
+.screen {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  padding: 14px 16px;
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ==========================================================================
+   START SCREEN
+   ========================================================================== */
+.start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 14px;
+}
+
+/* Wooden Signboard (木製看板) */
+.wood-board {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%),
+    linear-gradient(180deg, #441d0b 0%, #271004 100%);
+  border: 4px solid #b45309;
+  border-radius: 14px;
+  padding: 16px 14px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 
+    0 10px 28px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(245, 158, 11, 0.25),
+    inset 0 0 16px rgba(0, 0, 0, 0.7),
+    inset 0 2px 3px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.wood-board::before {
+  content: "★ 炭火焼 福招き 名物 ★";
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-amber-gold);
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+}
+
+.start-main-title {
+  font-size: 27px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  text-shadow: 0 3px 8px #000, 0 0 20px rgba(245, 158, 11, 0.8);
+  margin-bottom: 8px;
+}
+
+/* Prize Banner (勝ったらドリンク1杯無料！) - Extra Flashy Neon & Gold */
+.prize-banner {
+  background: linear-gradient(90deg, #991b1b 0%, #dc2626 50%, #991b1b 100%);
+  border: 2.5px solid #fef08a;
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 6px auto;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.7), 0 4px 14px var(--color-red-glow);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: prizeBannerPulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes prizeBannerPulse {
+  0% { transform: scale(0.98); box-shadow: 0 0 14px rgba(245, 158, 11, 0.5), 0 4px 10px var(--color-red-glow); }
+  100% { transform: scale(1.03); box-shadow: 0 0 24px rgba(254, 240, 138, 0.9), 0 6px 18px var(--color-red-glow); }
+}
+
+.prize-banner-text {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px #fde047;
+}
+
+.start-owner-card {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 1;
+  position: relative;
+  margin: 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.owner-character-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.6));
+  animation: floatMaster 3s ease-in-out infinite alternate;
+}
+
+@keyframes floatMaster {
+  0% { transform: translateY(0) rotate(-2.5deg); }
+  50% { transform: translateY(-5px) rotate(2.5deg); }
+  100% { transform: translateY(0) rotate(-2.5deg); }
+}
+
+.speech-bubble {
+  position: absolute;
+  top: 6px;
+  right: -8px;
+  background: var(--color-washi);
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--color-wood-mid);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  max-width: 170px;
+  line-height: 1.3;
+  z-index: 5;
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  border-width: 8px 7px 0;
+  border-style: solid;
+  border-color: var(--color-washi) transparent;
+  display: block;
+  width: 0;
+}
+
+.start-info-box {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #fde68a;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.start-info-title {
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+/* Big Action Button - Flashy Festive Style */
+.cta-button {
+  width: 100%;
+  background: linear-gradient(180deg, #f97316 0%, #ea580c 45%, #b43403 100%);
+  border: 3px solid #fde047;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  padding: 16px 20px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 
+    0 6px 0 #7c2d12,
+    0 10px 24px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(245, 158, 11, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  touch-action: manipulation;
+  text-shadow: 0 2px 4px #000;
+}
+
+.cta-button:hover {
+  filter: brightness(1.08);
+  border-color: #ffffff;
+}
+
+.cta-button:active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 0 #7c2d12,
+    0 4px 10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   GAME PLAY SCREEN
+   ========================================================================== */
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Status / Referee Banner at top */
+.referee-banner {
+  background: linear-gradient(90deg, #1e0f08 0%, #3e1b0c 50%, #1e0f08 100%);
+  border: 2px solid var(--color-amber-gold);
+  border-radius: 10px;
+  padding: 8px 12px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.referee-banner.janken-tempo {
+  background: linear-gradient(90deg, #7f1d1d 0%, #b91c1c 50%, #7f1d1d 100%);
+  border-color: #fef08a;
+  animation: pulseReferee 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseReferee {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+.referee-phase-text {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: 0 2px 4px #000, 0 0 12px var(--color-amber-gold);
+  transition: all 0.2s ease;
+}
+
+.referee-sub-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 1px;
+}
+
+/* Arena: Owner & Master Hand Reveal */
+.arena-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  justify-content: center;
+  min-height: 240px;
+  overflow: visible;
+}
+
+/* Fiery Radiant Pulsing Aura behind Daruma Master */
+.arena-zone::before {
+  content: "";
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 290px;
+  height: 290px;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.45) 0%, rgba(220, 38, 38, 0.3) 45%, rgba(0, 0, 0, 0) 72%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: fireAuraPulse 2.4s ease-in-out infinite alternate;
+}
+
+/* Dynamic Rotating Sunburst Rays */
+.arena-zone::after {
+  content: "";
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(245, 158, 11, 0.12) 0deg 12deg,
+    transparent 12deg 24deg
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: sunburstRotate 25s linear infinite;
+}
+
+@keyframes fireAuraPulse {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+}
+
+@keyframes sunburstRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.owner-stage {
+  position: relative;
+  width: 210px;
+  height: 210px;
+  z-index: 5;
+}
+
+.owner-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.85));
+  animation: floatMaster 2.6s ease-in-out infinite alternate;
+}
+
+/* Master's Hand Display Box */
+.master-hand-box {
+  margin-top: -12px;
+  z-index: 10;
+  background: 
+    linear-gradient(180deg, #3d1c0a 0%, #1c0c04 100%);
+  border: 3px solid var(--color-amber-gold);
+  border-radius: 12px;
+  padding: 8px 16px;
+  min-width: 140px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8), inset 0 0 8px rgba(245, 158, 11, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.master-hand-box.reveal-pop {
+  animation: revealPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes revealPop {
+  0% { transform: scale(0.6) rotate(-8deg); }
+  60% { transform: scale(1.15) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.master-hand-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-amber-gold);
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.master-hand-icon {
+  font-size: 40px;
+  line-height: 1;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.master-hand-name {
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+/* Player Interaction Zone: 3 Big Thumb-friendly Buttons */
+.player-controls {
+  background: 
+    linear-gradient(180deg, #221008 0%, #150904 100%);
+  border: 2px solid var(--color-wood-mid);
+  border-radius: 14px;
+  padding: 12px 10px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.controls-instruction {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fde68a;
+  letter-spacing: 1px;
+}
+
+.hand-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.btn-hand {
+  background: linear-gradient(180deg, #4a2410 0%, #2e1408 50%, #1c0a04 100%);
+  border: 3px solid #f59e0b;
+  border-radius: 14px;
+  padding: 12px 4px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 92px;
+  box-shadow: 
+    0 6px 0 #120602,
+    0 8px 16px rgba(0, 0, 0, 0.75),
+    inset 0 2px 2px rgba(254, 240, 138, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease, filter 0.15s ease;
+  touch-action: manipulation;
+  position: relative;
+}
+
+.btn-hand:hover:not(:disabled) {
+  border-color: #fde047;
+  filter: brightness(1.12);
+  background: linear-gradient(180deg, #5c2d15 0%, #3a190a 50%, #240d05 100%);
+  box-shadow: 
+    0 6px 0 #120602,
+    0 8px 18px rgba(245, 158, 11, 0.35),
+    inset 0 2px 3px rgba(254, 240, 138, 0.5);
+}
+
+.btn-hand:active:not(:disabled),
+.btn-hand.selected {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 0 #120602,
+    0 4px 10px rgba(0, 0, 0, 0.8),
+    0 0 16px rgba(245, 158, 11, 0.6);
+  border-color: #fef08a;
+  background: linear-gradient(180deg, #ea580c 0%, #c2410c 45%, #7c2d12 100%);
+}
+
+.btn-hand:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+.hand-emoji {
+  font-size: 34px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.hand-name {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   RESULTS OVERLAY / MODALS
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, #2a1409 0%, #180a04 100%);
+  border: 4px solid var(--color-wood-border);
+  border-radius: 16px;
+  padding: 20px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-overlay.active .modal-card {
+  transform: scale(1);
+}
+
+/* ==========================================================================
+   CINEMATIC VICTORY EFFECTS (John Woo Style: Flash, Feathers, Camera Shake)
+   ========================================================================== */
+.cinematic-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fef08a 45%, rgba(245, 158, 11, 0.9) 100%);
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.cinematic-flash.active {
+  opacity: 0.95;
+  transition: none;
+}
+
+/* John Woo Dramatic Camera Shake on Impact */
+@keyframes johnWooShake {
+  0% { transform: translate(0, 0) scale(1); }
+  15% { transform: translate(-7px, 5px) scale(1.02); }
+  30% { transform: translate(7px, -5px) scale(1.015); }
+  45% { transform: translate(-5px, -3px) scale(1.01); }
+  60% { transform: translate(4px, 3px) scale(1.005); }
+  75% { transform: translate(-2px, 1px) scale(1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.app-container.john-woo-shake {
+  animation: johnWooShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Spinning Golden Divine Mandala behind Winner Modal */
+.winner-radiant-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 550px;
+  height: 550px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(254, 240, 138, 0.25) 0deg 10deg,
+    transparent 10deg 20deg
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 101;
+  animation: haloSpin 20s linear infinite;
+  display: none;
+}
+
+.modal-overlay.active .winner-radiant-halo {
+  display: block;
+}
+
+@keyframes haloSpin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* WINNER SPECIAL MODAL - Ultra Flashy & Glorious */
+.card-winner {
+  border: 4px solid #fde047;
+  box-shadow: 
+    0 0 50px rgba(254, 240, 138, 0.9),
+    0 0 100px rgba(245, 158, 11, 0.6),
+    0 16px 40px rgba(0, 0, 0, 0.95);
+  background: 
+    linear-gradient(180deg, #3d1c0a 0%, #1a0802 100%);
+  position: relative;
+  z-index: 102;
+  animation: winnerCardPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes winnerCardPulse {
+  0% { box-shadow: 0 0 40px rgba(254, 240, 138, 0.8), 0 0 80px rgba(245, 158, 11, 0.5), 0 16px 40px rgba(0, 0, 0, 0.95); }
+  100% { box-shadow: 0 0 65px rgba(255, 255, 255, 1), 0 0 120px rgba(245, 158, 11, 0.8), 0 20px 48px rgba(0, 0, 0, 0.95); }
+}
+
+.winner-crown-badge {
+  font-size: 44px;
+  margin-bottom: -4px;
+  animation: bounceBadge 0.8s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 12px #fde047);
+}
+
+@keyframes bounceBadge {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-8px) scale(1.1); }
+}
+
+.winner-heading {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  background: linear-gradient(90deg, #ffffff 0%, #fef08a 30%, #f59e0b 60%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldTextShimmer 3s linear infinite;
+  filter: drop-shadow(0 2px 4px #000);
+}
+
+/* Coupon Ticket Style - Gold Foil Look */
+.free-drink-ticket {
+  width: 100%;
+  background: 
+    radial-gradient(circle at 0 50%, transparent 10px, #fffdf0 11px),
+    radial-gradient(circle at 100% 50%, transparent 10px, #fffdf0 11px);
+  background-size: 100% 100%;
+  border: 3px dashed #b45309;
+  border-radius: 12px;
+  padding: 16px 16px;
+  color: #1c1917;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(245, 158, 11, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.free-drink-ticket::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: skewX(-25deg);
+  animation: ticketSheen 3.5s ease-in-out infinite;
+}
+
+@keyframes ticketSheen {
+  0% { left: -100%; }
+  40% { left: 200%; }
+  100% { left: 200%; }
+}
+
+.ticket-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #b91c1c;
+  letter-spacing: 2px;
+}
+
+.ticket-main-reward {
+  font-size: 26px;
+  font-weight: 900;
+  color: #991b1b;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.ticket-instruction {
+  font-size: 13px;
+  font-weight: 800;
+  color: #451a03;
+  background: #fef08a;
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin-top: 4px;
+}
+
+/* Auth code & timestamp */
+.auth-meta-box {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.auth-code-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 900;
+  color: #facc15;
+  letter-spacing: 1px;
+}
+
+.auth-time-row {
+  color: #d6d3d1;
+  font-size: 11px;
+}
+
+.disclaimer-note {
+  font-size: 10px;
+  color: #a8a29e;
+  line-height: 1.4;
+}
+
+/* LOSE MODAL */
+.card-loser {
+  border-color: #64748b;
+}
+
+.loser-heading {
+  font-size: 26px;
+  font-weight: 900;
+  color: #f87171;
+  letter-spacing: 1px;
+}
+
+.loser-message {
+  font-size: 16px;
+  font-weight: 800;
+  color: #f3f4f6;
+  line-height: 1.5;
+}
+
+.loser-cheer {
+  font-size: 13px;
+  color: #fde68a;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+/* AIKO / DRAW POPUP */
+.aiko-banner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(135deg, #ea580c 0%, #b91c1c 100%);
+  border: 3px solid #fef08a;
+  border-radius: 16px;
+  padding: 16px 28px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(234, 88, 12, 0.8), 0 10px 24px #000;
+  z-index: 50;
+  display: none;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.aiko-banner-overlay.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.aiko-heading {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 4px #000;
+}
+
+.aiko-sub {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fef08a;
+  margin-top: 4px;
+}
+
+/* CONFETTI CANVAS */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+}
+
+/* RULES MODAL */
+.rules-content {
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #f5f5f4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rules-content h3 {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--color-amber-gold);
+  border-bottom: 1px solid var(--color-wood-mid);
+  padding-bottom: 4px;
+}
+
+.rules-content ul {
+  padding-left: 20px;
+}
+
+.btn-close-modal {
+  width: 100%;
+  background: #44403c;
+  border: 1px solid #78716c;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 380px) {
+  .start-main-title {
+    font-size: 22px;
+  }
+  .prize-banner-text {
+    font-size: 14px;
+  }
+  .hand-emoji {
+    font-size: 28px;
+  }
+  .hand-name {
+    font-size: 13px;
+  }
+  .btn-hand {
+    min-height: 80px;
+    padding: 8px 2px;
+  }
+  .owner-stage {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (min-height: 750px) {
+  .owner-stage {
+    width: 230px;
+    height: 230px;
+  }
+  .btn-hand {
+    min-height: 100px;
+    padding: 16px 8px;
+  }
+}
